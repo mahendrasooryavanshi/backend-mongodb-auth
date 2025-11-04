@@ -3,6 +3,7 @@ const app = express()
 const PORT = process.env.PORT || 8000;
 const bodyParser = require("body-parser")
 const AuthRouter = require("./router/auth.router")
+require("./config/database.config")
 app.use(bodyParser.json())
 app.use("/api/v1", AuthRouter)
 app.get("/", (req, res) => {

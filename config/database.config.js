@@ -1,10 +1,21 @@
 const mongoose = require('mongoose');
+const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/auth-service-db"
+const connectDB = async () => {
+    try {
+        await mongoose.connect(MONGO_URI, {
+            maxPoolSize: 20,         // important for concurrent requests
+            serverSelectionTimeoutMS: 5000,
+        });
+        console.log("✅ MongoDB connected");
 
-// 1. Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/auth-service-db')
-    .then(() => console.log('Connected to MongoDB:>>>>>>>>>>>>>'))
-    .catch(err => console.error('Could not connect to MongoDB:', err));
 
+    } catch (err) {
+        console.error("❌ DB Connection Failed:", err);
+        process.exit(1);
+    }
+};
+
+connectDB();
 
 
 // const mongoose = require("mongoose");

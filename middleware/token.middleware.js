@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const jwtConfig = require("../config/jwt.config")
-module.exports = {
+module.exports.tokenMiddleware = {
     genrateToken: async (payload, { type = "access", expiresIn } = {}) => {
         try {
             const secretKey = type = "refresh" ? jwtConfig.REFRESH_TOKEN_SECRET : jwtConfig.ACCESS_TOKEN_EXPIRES_IN;
