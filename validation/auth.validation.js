@@ -53,6 +53,32 @@ const loginSchema = {
         .messages({
             "object.missing": "Either email or mobile is required to log in",
         }),
-}
+};
+const updateUserSchema = {
+    body: Joi.object({
+        firstName: Joi.string().min(3).max(30).required().messages({
+            "any.required": "First name is required",
+            "string.empty": "First name cannot be empty",
+        }).optional(),
+        lastName: Joi.string().min(3).max(30).optional(),
+        email: Joi.string()
+            .email({ tlds: { allow: ["com", "net", "in"] } })
+            .messages({
+                "any.required": "Email is required",
+                "string.email": "Invalid email format",
+            }),
+        mobile: Joi.string()
+            .pattern(/^[0-9]{10}$/)
+            .messages({
+                "any.required": "Mobile number is required",
+                "string.pattern.base": "Mobile must be a 10-digit number",
+            }).optional(),
+    })
+        // ✅ Ensure at least one field is provided
+        .min(1)
+        .messages({
+            "object.min": "Required field to update users",
+        }),
+};
 
-module.exports = { createUserSchema, loginSchema };
+module.exports = { createUserSchema, loginSchema, updateUserSchema };

@@ -8,7 +8,7 @@ module.exports.AuthController = {
             const body = req.body
 
             const existingUser = await userService.findOne({
-                $or: [{ eamil: body.eamil }, { mobile: body.mobile }]
+                $or: [{ email: body.email }, { mobile: body.mobile }]
             })
 
             if (existingUser) {
@@ -74,7 +74,8 @@ module.exports.AuthController = {
                 email: user.email,
                 role: user.role,
             }
-            const accessToken = await tokenMiddleware.genrateToken({ payload }, { type: "access" })
+
+            const accessToken = await tokenMiddleware.genrateToken(payload, { type: "access" })
             const refeshToken = await tokenMiddleware.genrateToken(payload, { type: "refresh" })
 
             return res.status(200).json({
@@ -94,6 +95,81 @@ module.exports.AuthController = {
             return res.status(500).json({
                 sataus: 500,
                 message: "Something went wrong.."
+            })
+        }
+    },
+    profile: async (req, res) => {
+        try {
+            const userId = req.user.id
+
+            const user = await userService.findById(userId, { createdAt: 0, updatedAt: 0, deletedAt: 0 })
+            return res.json({
+                status: 200,
+                message: "User profile",
+                data: user
+            })
+        } catch (error) {
+            console.log("Error in profile,auth controller ,Message:", error.message)
+            console.log("error :", error)
+            return res.status(500).json({
+                status: 500,
+                message: "Something went wrong...",
+                errorMessage: error.message
+            })
+        }
+    },
+    userList: async (req, res) => {
+        try {
+            const userId = req.user.id; // from decoded token
+            const query = { isActive: true, _id: { $ne: userId } }
+            const {
+                limit = 12,
+                offset = 0,
+                page = 1,
+                orderType = 1,
+                orderBy = "createdAt"
+            } = req.query;
+            const options = { limit, offset, page }
+            options.sort = { orderBy: orderType }
+            options.skip = (page - 1) * limit;
+            const users = await userService.findAll(query, options)
+
+            return res.json({
+                status: 200,
+                message: "user list",
+                page: page,
+                count: users.length,
+                data: users
+            })
+
+        } catch (error) {
+            console.log("Error in userList,auth controller ,Message:", error.message)
+            console.log("error :", error)
+            return res.status(500).json({
+                status: 500,
+                message: "Something went wrong...",
+                errorMessage: error.message
+            })
+        }
+    },
+    update: async (req, res) => {
+        try {
+            const userId = req.user.id;
+            const body = req.body
+            const updateUser = await userService.findByIdAndUpdate({ _id: userId }, body)
+            if (updateUser) {
+                return res.json({
+                    status: 201,
+                    message: "user updated successfully.."
+                })
+            }
+        } catch (error) {
+            console.log("Error in auth-controller,user update:", error.message);
+            console.log("error :", error);
+            return res.status(500).json({
+                status: 500,
+                message: "Something went wrong...",
+                errorMessage: error.message
             })
         }
     }
