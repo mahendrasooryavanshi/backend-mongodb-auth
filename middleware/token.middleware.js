@@ -17,12 +17,15 @@ module.exports.tokenMiddleware = {
         }
     },
     verifyToken: async (token, type = "access") => {
+        console.log("------------verifyToken--------------")
         try {
             const secretKey = type === "refresh"
                 ? jwtConfig.REFRESH_TOKEN_SECRET
                 : jwtConfig.ACCESS_TOKEN_SECRET;
-
             const decode = await jwt.verify(token, secretKey);
+            // console.log("seckretKey", secretKey);
+            // console.log("decode: >>>", decode)
+            // console.log("-------------------")
 
             return decode;
         } catch (err) {

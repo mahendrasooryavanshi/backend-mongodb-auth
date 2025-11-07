@@ -1,6 +1,7 @@
 const { tokenMiddleware } = require("./token.middleware");
 
 module.exports.authTokenMiddleware = async (req, res, next) => {
+    console.log(">>>>>>>>> authTokenMiddleware >>>>>>>>>>>>>>>>")
     try {
         // ✅ Get the token from headers
         const authHeader = req.headers["authorization"];
@@ -10,13 +11,14 @@ module.exports.authTokenMiddleware = async (req, res, next) => {
                 message: "Access denied. No token provided or invalid format.",
             });
         }
-
+        // console.log("authHeader:>>>>>", authHeader)
         // Extract token from "Bearer <token>"
         const token = authHeader.split(" ")[1];
 
         // ✅ Verify token
         const decoded = await tokenMiddleware.verifyToken(token, "access");
         // ✅ Attach user info to request (useful for controllers)
+        console.log("Verify token decodedc", decoded)
         req.user = decoded;
         next();
     } catch (err) {

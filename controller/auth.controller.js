@@ -102,7 +102,10 @@ module.exports.AuthController = {
         try {
             const userId = req.user.id
 
-            const user = await userService.findById(userId, { createdAt: 0, updatedAt: 0, deletedAt: 0 })
+            const user = await userService.findById(userId,
+                { createdAt: 0, updatedAt: 0, deletedAt: 0 }
+
+            )
             return res.json({
                 status: 200,
                 message: "User profile",
