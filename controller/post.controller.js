@@ -31,17 +31,20 @@ module.exports.postController = {
             const cacheKey = "posts:list";
 
             // 🔍 1. Check cache
-
             const cached = await Cache.get(cacheKey);
             if (cached) {
                 console.log("✅ Data fetched from Redis cache");
                 return res.status(200).json({
-                    source: "cache",
+                    source: "redis",
+                    status: 200,
+                    message: "Post list fetched successfully..",
                     data: JSON.parse(cached),
                 });
             }
+
             const userId = req.user.id
             // const result = await Post.find({}).populate("createdBy", "role firstName lastName email").lean()
+
             const result = await Post.aggregate([
                 {
                     $lookup: {
@@ -70,7 +73,7 @@ module.exports.postController = {
             ])
 
             // 💾 3. Store in Redis (set expiry of 60 sec)
-            await Cache.set(cacheKey, resJSON.stringify(result), { EX: 60 }); // cache for 2 min
+            await Cache.set(cacheKey, JSON.stringify(result), 60); // cache for 2 min
             // console.log(result, ">>>>>>>> result")
             return res.status(200).json({
                 status: 200,
@@ -78,6 +81,7 @@ module.exports.postController = {
                 total: result.length,
                 data: result
             })
+
         } catch (error) {
             console.log("Error in post list api,Controller:message is", error.message)
             return res.status(500).json({

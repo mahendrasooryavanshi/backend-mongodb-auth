@@ -1,5 +1,4 @@
 const { createClient } = require("redis");
-
 let client;
 let isConnected = false;
 

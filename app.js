@@ -1,10 +1,10 @@
+require("./config/database.config")
 const express = require("express")
 const app = express()
 const PORT = process.env.PORT || 8000;
 const bodyParser = require("body-parser")
 const AuthRouter = require("./router/auth.router")
 const { initRedis } = require("./config/redis.config")
-
 
 
 app.use(bodyParser.json())
